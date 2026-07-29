@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Patients — Clinic records{% endblock %}
+
+{% block content %}
+<p class="eyebrow">Register</p>
+<h1>Patients</h1>
+
+<form method="get" class="searchbar">
+    {{ search_form.q }}
+    <button type="submit" class="btn">Search</button>
+    <label class="small" style="font-weight:400;display:flex;gap:.35rem;align-items:center">
+        {{ search_form.include_inactive }} Include people no longer under care
+    </label>
+</form>
+
+{% if patients %}
+<table class="register">
+    <caption class="small muted">{{ page_obj.paginator.count }} matching {{ page_obj.paginator.count|pluralize:"file,files" }}</caption>
+    <thead>
+        <tr>
+            <th scope="col">File</th>
+            <th scope="col">Name</th>
+            <th scope="col">Age</th>
+            <th scope="col">Village</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Visits</th>
+            <th scope="col">Notice</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td class="num" data-label="File">{{ patient.mrn }}</td>
+            <td data-label="Name"><a href="{{ patient.get_absolute_url }}">{{ patient.full_name }}</a></td>
+            <td class="num" data-label="Age">{{ patient.age }}</td>
+            <td data-label="Village">{{ patient.village|default:"—" }}</td>
+            <td class="num" data-label="Phone">{{ patient.phone|default:"—" }}</td>
+            <td class="num" data-label="Visits">{{ patient.visit_count }}</td>
+            <td data-label="Notice">
+                {% if patient.has_allergies %}<span class="mark mark-allergy">allergy</span>{% endif %}
+                {% if not patient.is_active %}<span class="mark mark-done">not under care</span>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty">
+    <p>No files match that search.</p>
+    <a class="btn" href="{% url 'records:patient_create' %}">Add a patient</a>
+</div>
+{% endif %}
+{% endblock %}

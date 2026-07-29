@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Today — Clinic records{% endblock %}
+
+{% block content %}
+<p class="eyebrow">Clinic overview</p>
+<h1>Today at the clinic</h1>
+
+<ul class="counts">
+    <li class="card"><span class="n">{{ patient_count }}</span><span class="k">people under care</span></li>
+    <li class="card"><span class="n">{{ visits_this_week }}</span><span class="k">visits, last 7 days</span></li>
+    <li class="card"><span class="n">{{ current_meds }}</span><span class="k">medications running</span></li>
+</ul>
+
+<div class="actions" style="margin-top:0">
+    <a class="btn" href="{% url 'records:patient_create' %}">Add a patient</a>
+    <a class="btn btn-quiet" href="{% url 'records:patient_list' %}">Search the register</a>
+</div>
+
+<h2>Visits still open</h2>
+{% if open_visits %}
+<ul class="timeline">
+    {% for visit in open_visits %}
+    <li>
+        <span class="when">{{ visit.date|date:"D j M, H:i" }}</span>
+        <h3><a href="{{ visit.get_absolute_url }}">{{ visit.patient.full_name }}</a>
+            <span class="mark mark-open">in progress</span></h3>
+        <p class="small muted" style="margin:.15rem 0 0">{{ visit.reason }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="muted empty">Nothing open. Every visit has been written up.</p>
+{% endif %}
+
+<h2>Recently recorded</h2>
+{% if recent_visits %}
+<ul class="timeline">
+    {% for visit in recent_visits %}
+    <li>
+        <span class="when">{{ visit.date|date:"j M Y" }}</span>
+        <h3><a href="{{ visit.get_absolute_url }}">{{ visit.patient.full_name }}</a></h3>
+        <p class="small muted" style="margin:.15rem 0 0">
+            {{ visit.reason }}{% for d in visit.diagnoses.all %} · {{ d.description }}{% endfor %}
+        </p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="muted empty">No visits recorded yet. Add a patient, then record their first visit.</p>
+{% endif %}
+{% endblock %}

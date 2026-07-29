@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Visit {{ visit.date|date:"j M Y" }} — {{ visit.patient.full_name }}{% endblock %}
+
+{% block content %}
+<p class="eyebrow">File {{ visit.patient.mrn }} ·
+    <a href="{{ visit.patient.get_absolute_url }}">{{ visit.patient.full_name }}</a></p>
+<h1>{{ visit.reason }}</h1>
+<p class="mono small muted">{{ visit.date|date:"l j F Y, H:i" }} · {{ visit.get_status_display }}{% if visit.seen_by %} · seen by {{ visit.seen_by.get_username }}{% endif %}</p>
+
+{% if visit.notes %}
+<div class="card" style="margin-top:1rem">{{ visit.notes|linebreaksbr }}</div>
+{% endif %}
+
+<h2>Diagnoses</h2>
+{% if visit.diagnoses.all %}
+<ul>
+    {% for d in visit.diagnoses.all %}
+    <li>{{ d.description }} {% if d.icd_code %}<span class="mono muted">{{ d.icd_code }}</span>{% endif %}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="muted">None recorded for this visit.</p>
+{% endif %}
+
+<form method="post" action="{% url 'records:diagnosis_create' visit.pk %}" class="card" style="max-width:34rem">
+    {% csrf_token %}
+    {{ diagnosis_form.as_p }}
+    <button type="submit" class="btn">Add diagnosis</button>
+</form>
+
+{% if visit.medications.all %}
+<h2>Medications started here</h2>
+<ul>
+    {% for med in visit.medications.all %}<li>{{ med.name }} {{ med.dosage }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<div class="actions">
+    <a class="btn btn-quiet" href="{% url 'records:visit_update' visit.pk %}">Edit visit</a>
+    <a class="btn btn-quiet" href="{% url 'records:medication_create' visit.patient.pk %}">Add a medication</a>
+</div>
+{% endblock %}

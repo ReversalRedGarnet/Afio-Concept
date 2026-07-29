@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ patient.full_name }}?{% endblock %}
+
+{% block content %}
+<p class="eyebrow">File {{ patient.mrn }}</p>
+<h1>Delete this file?</h1>
+<p>Deleting {{ patient.full_name }} also removes {{ patient.visits.count }} visit record{{ patient.visits.count|pluralize }}
+   and {{ patient.medications.count }} medication record{{ patient.medications.count|pluralize }}. This cannot be undone.</p>
+<p class="muted small">If the person has simply left the area, edit the file and uncheck
+   <em>Currently under care</em> instead. That keeps the history.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="actions">
+        <button type="submit" class="btn btn-danger">Delete permanently</button>
+        <a class="btn btn-quiet" href="{{ patient.get_absolute_url }}">Keep the file</a>
+    </div>
+</form>
+{% endblock %}

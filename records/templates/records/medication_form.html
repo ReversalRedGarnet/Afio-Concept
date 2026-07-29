@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Medication — {{ patient.full_name }}{% endblock %}
+
+{% block content %}
+<p class="eyebrow">File {{ patient.mrn }} · {{ patient.full_name }}</p>
+<h1>{% if form.instance.pk %}Edit medication{% else %}Add a medication{% endif %}</h1>
+
+{% if patient.has_allergies %}
+<div class="alert-allergy" style="max-width:34rem">
+    <span class="label">Allergies</span>{{ patient.allergies }}
+</div>
+{% endif %}
+
+<form method="post" class="card" style="margin-top:1rem">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+    <div class="actions">
+        <button type="submit" class="btn">Save medication</button>
+        <a class="btn btn-quiet" href="{{ patient.get_absolute_url }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

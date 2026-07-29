@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Edit {{ form.instance.full_name }}{% else %}Add a patient{% endif %}{% endblock %}
+
+{% block content %}
+<p class="eyebrow">{% if form.instance.pk %}File {{ form.instance.mrn }}{% else %}New file{% endif %}</p>
+<h1>{% if form.instance.pk %}Edit {{ form.instance.full_name }}{% else %}Add a patient{% endif %}</h1>
+<p class="muted small">A file number is assigned automatically when you save.</p>
+
+<form method="post" class="card" style="margin-top:1rem">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+    <div class="actions">
+        <button type="submit" class="btn">{% if form.instance.pk %}Save changes{% else %}Save patient{% endif %}</button>
+        <a class="btn btn-quiet" href="{% if form.instance.pk %}{{ form.instance.get_absolute_url }}{% else %}{% url 'records:patient_list' %}{% endif %}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.full_name }} — Clinic records{% endblock %}
+
+{% block content %}
+<article class="filecard">
+    <span class="filetab">{{ patient.mrn }}</span>
+    <h1>{{ patient.full_name }}</h1>
+    <p class="small muted" style="margin:0">
+        {{ patient.get_sex_display }}{% if not patient.is_active %} · <span class="mark mark-done">no longer under care</span>{% endif %}
+    </p>
+
+    <dl class="vitals">
+        <div><dt>Age</dt><dd class="mono">{{ patient.age }}</dd></div>
+        <div><dt>Born</dt><dd class="mono">{{ patient.dob|date:"j M Y" }}</dd></div>
+        <div><dt>Phone</dt><dd class="mono">{{ patient.phone|default:"—" }}</dd></div>
+        <div><dt>Village</dt><dd>{{ patient.village|default:"—" }}</dd></div>
+        <div><dt>Email</dt><dd>{{ patient.email|default:"—" }}</dd></div>
+    </dl>
+
+    {% if patient.has_allergies %}
+    <div class="alert-allergy">
+        <span class="label">Allergies</span>
+        {{ patient.allergies|linebreaksbr }}
+    </div>
+    {% endif %}
+
+    {% if patient.address %}<p class="small muted">{{ patient.address|linebreaksbr }}</p>{% endif %}
+    {% if patient.notes %}<p class="small">{{ patient.notes|linebreaksbr }}</p>{% endif %}
+
+    <div class="actions">
+        <a class="btn" href="{% url 'records:visit_create' patient.pk %}">Record a visit</a>
+        <a class="btn btn-quiet" href="{% url 'records:medication_create' patient.pk %}">Add a medication</a>
+        <a class="btn btn-quiet" href="{% url 'records:patient_update' patient.pk %}">Edit details</a>
+        <a class="btn btn-danger" href="{% url 'records:patient_delete' patient.pk %}">Delete file</a>
+    </div>
+</article>
+
+<h2>Medications running now</h2>
+{% if current_meds %}
+<table class="register">
+    <thead><tr><th scope="col">Medication</th><th scope="col">Dose</th><th scope="col">Started</th><th scope="col">Ends</th><th scope="col"></th></tr></thead>
+    <tbody>
+    {% for med in current_meds %}
+        <tr>
+            <td data-label="Medication">{{ med.name }}</td>
+            <td data-label="Dose">{{ med.dosage|default:"—" }}</td>
+            <td class="num" data-label="Started">{{ med.start_date|date:"j M Y" }}</td>
+            <td class="num" data-label="Ends">{{ med.end_date|date:"j M Y"|default:"ongoing" }}</td>
+            <td>
+                <form method="post" action="{% url 'records:medication_stop' med.pk %}" style="display:inline">
+                    {% csrf_token %}
+                    <button class="linkish small" type="submit">Mark finished</button>
+                </form>
+                · <a class="small" href="{% url 'records:medication_update' med.pk %}">Edit</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="muted empty">No medication running. <a href="{% url 'records:medication_create' patient.pk %}">Add one</a>.</p>
+{% endif %}
+
+{% if past_meds %}
+<h2>Past medications</h2>
+<ul class="small muted">
+    {% for med in past_meds %}
+    <li>{{ med.name }} {{ med.dosage }} — {{ med.start_date|date:"j M Y" }} to {{ med.end_date|date:"j M Y"|default:"—" }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h2>Visit history</h2>
+{% if patient.visits.all %}
+<ul class="timeline">
+    {% for visit in patient.visits.all %}
+    <li>
+        <span class="when">{{ visit.date|date:"j M Y, H:i" }}</span>
+        {% if visit.status == 'open' %}<span class="mark mark-open">in progress</span>{% endif %}
+        <h3><a href="{{ visit.get_absolute_url }}">{{ visit.reason }}</a></h3>
+        {% for d in visit.diagnoses.all %}
+            <p class="small" style="margin:.1rem 0">{{ d.description }} {% if d.icd_code %}<span class="mono muted">{{ d.icd_code }}</span>{% endif %}</p>
+        {% endfor %}
+        {% if visit.seen_by %}<p class="small muted" style="margin:.1rem 0">Seen by {{ visit.seen_by.get_username }}</p>{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="muted empty">No visits recorded yet. <a href="{% url 'records:visit_create' patient.pk %}">Record the first one</a>.</p>
+{% endif %}
+{% endblock %}

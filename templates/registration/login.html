@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Clinic records{% endblock %}
+
+{% block content %}
+<p class="eyebrow">Staff access</p>
+<h1>Sign in</h1>
+<p class="muted small">Patient records are only visible to signed-in staff.</p>
+
+<form method="post" class="card" style="max-width:24rem;margin-top:1rem">
+    {% csrf_token %}
+    {% if form.errors %}
+        <ul class="errorlist"><li>That username and password don't match an account.</li></ul>
+    {% endif %}
+    <p>
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        <input class="input" type="text" name="username" id="{{ form.username.id_for_label }}"
+               autocomplete="username" autofocus required>
+    </p>
+    <p>
+        <label for="{{ form.password.id_for_label }}">Password</label>
+        <input class="input" type="password" name="password" id="{{ form.password.id_for_label }}"
+               autocomplete="current-password" required>
+    </p>
+    <button type="submit" class="btn">Sign in</button>
+    <input type="hidden" name="next" value="{{ next }}">
+</form>
+{% endblock %}

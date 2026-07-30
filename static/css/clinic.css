@@ -5,13 +5,13 @@
    3. Data is set in monospace so file numbers and doses line up down a column. */
 
 :root {
-    --paper: #ede8de;
-    --surface: #fcfaf5;
-    --ink: #24262a;
-    --ink-soft: #6a6558;
-    --rule: #d3cbbb;
-    --flag: #a4232b;
-    --ok: #2c5e3f;
+    --paper: #eef6f2;
+    --surface: #fbfffd;
+    --ink: #17302b;
+    --ink-soft: #5b7a72;
+    --rule: #cfe6dc;
+    --flag: #a33131;
+    --ok: #0d7a68;
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -159,7 +159,7 @@ h3 { font: 600 1rem/1.3 var(--sans); margin: 0 0 0.25rem; }
     margin-top: 0.9rem;
     border-left: 3px solid var(--flag);
     padding: 0.5rem 0.7rem;
-    background: #fbf3f2;
+    background: #fbf2f1;
 }
 
 .alert-allergy .label { color: var(--flag); font-weight: 600; }
@@ -193,7 +193,7 @@ h3 { font: 600 1rem/1.3 var(--sans); margin: 0 0 0.25rem; }
 }
 
 .register tbody tr:last-child td { border-bottom: 0; }
-.register tbody tr:hover { background: #f5f1e8; }
+.register tbody tr:hover { background: #e9f6f0; }
 .register .num { font-family: var(--mono); white-space: nowrap; }
 
 /* --- Status marks (the only coloured text) ------------------------------ */
@@ -292,10 +292,10 @@ ul.errorlist {
     cursor: pointer;
 }
 
-.btn:hover { background: #000; }
+.btn:hover { background: #0b1f1a; }
 
 .btn-quiet { color: var(--ink); background: transparent; }
-.btn-quiet:hover { background: #e4ddcf; }
+.btn-quiet:hover { background: #ddefe6; }
 .btn-danger { color: var(--flag); background: transparent; border-color: var(--flag); }
 .btn-danger:hover { color: var(--surface); background: var(--flag); }
 
